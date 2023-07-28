@@ -17,11 +17,19 @@ class ChatGPTBot:
         if prompt_index < 0 or prompt_index >= len(self.prompts):
             return "Invalid prompt index."
         prompt = self.prompts[prompt_index]
-        response = openai.Completion.create(engine=self.engine, prompt=prompt, max_tokens=3000,  # Set maximum tokens to accommodate larger responses
-        temperature=0.7,  # Adjust the temperature as needed
-        n=1,  # Generate only one response
-        stream=False ) # Get the full response without truncation)
-        return response["choices"][0]["text"].strip()
+        response = openai.Completion.create(engine=self.engine, prompt=prompt, max_tokens=100,
+                                            # Set maximum tokens to accommodate larger responses
+                                            temperature=0.7,  # Adjust the temperature as needed
+                                            n=1,  # Generate only one response
+                                            stream=False)  # Get the full response without truncation)
+        if 'choices' in response and len(response['choices']) > 0:
+            completion = response['choices'][0]['text']
+            completion = completion.replace('\n','')
+            print(completion)
+        else:
+            print("No response.")
+            return "No Response"
+        return completion
 
     def update_prompt(self, prompt_index, new_prompt):
         if prompt_index < 0 or prompt_index >= len(self.prompts):
